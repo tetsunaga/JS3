@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Firebase_version9_RealtimeDB(G'sACADEMY初学者用サンプル)</title>
+        <style>
+            .remove:hover {
+                background: aquamarine;
+            }
+        </style>
+        <!-- //cssとリンク -->
+        <link rel="stylesheet" href="./style.css">
+        <!-- //イメージ図を取り込もうと思いましたが、あえなくエラー -->
+        <!-- <imag src="/imags/buke.png"></imag> -->
+    </head>
+    <body>
+        <!-- コンテンツ表示画面 -->
+        <div>
+            //送信用の名前欄とテキスト欄を作成（キーと値のid化）
+            <div>名前：<input type="text" id="uname" /></div>
+            <div>
+                <!-- //テキスト欄の場所を特定して、条件を設定 -->
+                <textarea id="text" cols="30" rows="10"></textarea>
+                <!-- 送信ボタン -->
+                <button id="send">送信</button>
+            </div>
+            <!-- //htmlで記載されるテキスト欄の概要を設定 -->
+            <div id="output" style="overflow: auto; height: 300px"></div>
+        </div>
+        <!-- //JQueryとリンク -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+            import {
+                getDatabase,
+                ref,
+                push,
+                set,
+                onChildAdded,
+                remove,
+                onChildRemoved,
+            } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+
+            // Your web app's Firebase configuration
+                const firebaseConfig = {
+                    apiKey: "AIzaSyB5DZMJstBgPa2zXkAaSNzVWJdZ7YlHqoc",
+                    authDomain: "gs23-49ab4.firebaseapp.com",
+                    databaseURL: "https://gs23-49ab4-default-rtdb.firebaseio.com",
+                    projectId: "gs23-49ab4",
+                    storageBucket: "gs23-49ab4.appspot.com",
+                    messagingSenderId: "676601687490",
+                    appId: "1:676601687490:web:527153d627fa12d5be7a5b"
+                };
+
+            const app = initializeApp(firebaseConfig);
+            const db = getDatabase(app); //RealtimeDBに接続
+            const dbRef = ref(db, "chat"); //RealtimeDB内の"chat"を使う
+
+            //データ登録(Click)
+            $("#send").on("click", function () {
+                //msgのデータの塊の中はユーザー名とテキスト
+                const msg = {
+                    uname: $("#uname").val(),
+                    text: $("#text").val(),
+                };
+                const newPostRef = push(dbRef); //ユニークKEYを生成
+                set(newPostRef, msg); //"chat"にユニークKEYをつけてオブジェクトデータを登録
+
+                // 入力欄を空にする方法🤗
+                $("#uname").val(""); //空にする
+                $("#text").val(""); //空にする
+            });
+
+            //データ登録(Enter)
+            $("#text").on("keydown", function (e) {
+                console.log(e); //e変数の中身を確認！！
+                if (e.keyCode == 13) {
+                    //EnterKey=13
+                    const msg = {
+                        uname: $("#uname").val(),
+                        text: $("#text").val(),
+                    };
+                    const newPostRef = push(dbRef); //ユニークKEYを生成
+                    set(newPostRef, msg); //"chat"にユニークKEYをつけてオブジェクトデータを登録
+                }
+            });
+
+            //最初にデータ取得＆onSnapshotでリアルタイムにデータを取得
+            onChildAdded(dbRef, function (data) {
+                const msg = data.val(); //オブジェクトデータを取得し、変数msgに代入
+                const key = data.key; //データのユニークキー（削除や更新に使用可能）
+                //表示用テキスト・HTMLを作成
+                let h = "<p>";
+                h += msg.uname;
+                h += "<br>";
+                h += msg.text;
+                h += "</p>";
+                $("#output").append(h); //#outputの最後に追加
+            });
+        </script>
+    </body>
+</html>

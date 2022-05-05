@@ -1,0 +1,27 @@
+
+body {
+    width: 50%;
+    margin: 30px auto;
+    height: 300px;
+    background: #8DB4E5;
+  }
+
+textarea {
+    height: 70vh;
+    background: #8DB4E5;
+    overflow: scroll;
+    /* font: size 100px;;  */
+    
+}
+button {
+    width: 100%;
+    height: 100%;
+    background: #61E739;
+    color: #fff;
+    font-size: 2.0rem;
+    font-weight: bold;
+    border: 0;
+   }
+
+
+
